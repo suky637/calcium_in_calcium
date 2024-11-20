@@ -1,0 +1,227 @@
+import "stdio.h"
+import "stdlib.h"
+import "ctype.h"
+import "std.ca"
+import "io.ca"
+
+data TOKEN
+{
+    point char name?  # type of token
+    point char value? # value of token
+}
+
+fn copyString(? char str?) -> point char
+{
+    point char s2?
+    s2 = string.dup(str)
+    return = s2
+}
+
+fn main() -> int
+{
+
+    #point char text = IO.read("test.ca") # char* text = IO__read("test.ca")
+
+    # string = ""
+    # loop (text)
+    # check (character == '\n') -> lex(string); string = ""; continue;
+    # string += character
+
+    point char text = IO.read("test.cal")
+
+    # dynamic array, that can be resized
+    # TOKEN:
+    # - point char NAME_OF_TOKEN
+    # - 32 char VALUE [TEXT]
+
+    256 TOKEN struct tokens?
+    int crntTokenIndex = 0
+    256 char buffer?
+    int buf_index = 0
+    int i = 0 
+
+    # {"10", "PLUS", "5"}
+
+    
+    while i <= string.len(text)
+    {
+        if (int)(text[i] == 32) or 
+        text[i] == '\t' or 
+        text[i] == '\n' or 
+        text[i] == '\0' or 
+        text[i] == '+' or 
+        text[i] == '*' or 
+        text[i] == '/' or 
+        text[i] == '=' or
+        text[i] == '-' then
+        {
+            int j = i
+            char nextDelimiter = text[j]
+
+            while (int)(text[j]) == 32 or text[j] == '\t'
+            {
+                j = j + 1
+                nextDelimiter = text[j]
+            }
+
+            #printf("firstprint \n")
+            #printf("%s\n", buffer)
+
+            if buf_index != 0 then
+            {
+                int isNum = 1
+                int j = 0
+                #######################################################################################################################
+                # NUMBERS
+                #######################################################################################################################
+                int period = 0
+                while j < string.len(buffer)
+                {
+                    char crnt = buffer[j]
+                    if !isdigit(crnt)
+                    {
+                        if crnt == '.' then
+                        {
+                            period = period + 1
+                        }
+                        else
+                        {
+                            isNum = 0
+                        }
+                        if period == 2 then
+                        {
+                            isNum = 0
+                        }
+                        
+                    }
+                    
+                    j = j + 1
+                }
+
+                #######################################################################################################################
+                # TOKENS
+                #######################################################################################################################
+
+                if isNum then
+                {
+                    TOKEN struct crnt?
+                    crnt.name = "NUMBER"
+                    crnt.value = copyString(buffer)
+                    tokens[crntTokenIndex] = crnt
+                    crntTokenIndex = crntTokenIndex + 1
+                }
+                else if nextDelimiter == '=' then
+                {
+                    TOKEN struct crnt?
+                    crnt.name = "VARIABLE"
+                    crnt.value = copyString(buffer)
+                    tokens[crntTokenIndex] = crnt
+                    crntTokenIndex = crntTokenIndex + 1
+                }
+                else if string.cmp("int", buffer)
+                {
+                    TOKEN struct crnt?
+                    crnt.name = "INT"
+                    crnt.value = "int"
+                    tokens[crntTokenIndex] = crnt
+                    
+                    crntTokenIndex = crntTokenIndex + 1
+                }
+                else if string.cmp("number", buffer)
+                {
+                    TOKEN struct crnt?
+                    crnt.name = "NUMBER"
+                    crnt.value = "number"
+                    tokens[crntTokenIndex] = crnt
+                    
+                    crntTokenIndex = crntTokenIndex + 1
+                }
+                else
+                {
+                    TOKEN struct crnt?
+                    crnt.name = "UNKNOWN"
+                    crnt.value = copyString(buffer)
+                    tokens[crntTokenIndex] = crnt
+                    crntTokenIndex = crntTokenIndex + 1
+                }
+            }
+
+            #######################################################################################################################
+            # DELIMITERS
+            #######################################################################################################################
+
+            # here is where we check of the type
+            if text[i] == '+' then
+            {
+                TOKEN struct crnt?
+                crnt.name = "PLUS"
+                crnt.value = "+"
+                tokens[crntTokenIndex] = crnt
+                crntTokenIndex = crntTokenIndex + 1
+            }
+            else if text[i] == '*' then
+            {
+                TOKEN struct crnt?
+                crnt.name = "MUL"
+                crnt.value = "*"
+                tokens[crntTokenIndex] = crnt
+                crntTokenIndex = crntTokenIndex + 1
+            }
+            else if text[i] == '/' then
+            {
+                TOKEN struct crnt?
+                crnt.name = "DIVIDE"
+                crnt.value = "/"
+                tokens[crntTokenIndex] = crnt
+                crntTokenIndex = crntTokenIndex + 1
+            }
+            else if text[i] == '-' then
+            {
+                TOKEN struct crnt?
+                crnt.name = "MINUS"
+                crnt.value = "-"
+                tokens[crntTokenIndex] = crnt
+                crntTokenIndex = crntTokenIndex + 1
+            }
+            else if text[i] == '=' then
+            {
+                TOKEN struct crnt?
+                crnt.name = "EQUAL"
+                crnt.value = "="
+                tokens[crntTokenIndex] = crnt
+                crntTokenIndex = crntTokenIndex + 1
+            }
+            else if text[i] == '\n' or text[i] == '\0' then
+            {
+                TOKEN struct crnt?
+                crnt.name = "EOL"
+                crnt.value = ";"
+                tokens[crntTokenIndex] = crnt
+                crntTokenIndex = crntTokenIndex + 1
+            }
+
+
+            buf_index = 0
+            i = i + 1
+            continue
+        }
+        #printf("text i \n%c\n",text[i])
+        buffer[buf_index] = (char)text[i]
+        int t = buf_index + 1
+        buffer[t] = '\0'
+        #printf("buffer \n%s\n",buffer)
+        buf_index = buf_index + 1
+        i = i + 1
+        
+    }
+
+    int k = 0
+    while k < crntTokenIndex
+    {
+        printf("'%s': '%s'\n",tokens[k].name, tokens[k].value)
+        k = k + 1
+    }
+
+
+    return = 0
+}

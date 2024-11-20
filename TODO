@@ -1,0 +1,23 @@
+# MAIN GOALS
+- [ ] LEXING TOKEN (X)
+- [ ] PARSING ()
+- [ ] COMPILE TO ASSEMBLY ()
+
+# SIDE GOALS
+- [ ] DYNAMIC TYPING ()
+    - [ ] GET THE TYPE OF VALUE ()
+        - [ ] `any` KEYWORD ()
+- [ ] NO `fn main() -> int` ()
+
+# STEPS TOWARDS AN ASSEMBLER
+- [ ] LINKER
+- [ ] LEXER|PARSER
+- [ ] ASSEMBLE
+- [ ] COMBINE ALL THE STEPS ^
+
+# Compilation
+|-> main.ca
+|-> Calcium (compiler)
+|-> main.casm
+|-> Calcium (compiler) [ASM]
+L-> main
